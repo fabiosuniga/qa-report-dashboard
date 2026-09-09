@@ -174,7 +174,7 @@
   .badge-INCORRETA { background: var(--incorreta-bg); color: var(--incorreta-text); border-color: var(--incorreta-border); }
   .badge-ERRO { background: var(--erro-bg); color: var(--erro-text); border-color: var(--erro-border); }
 
-  /* Ícone Lixeira corrigido (Transparência zero, cor base) */
+  /* Ícone Lixeira  */
   .delete-btn {
     background: transparent; border: none; cursor: pointer; font-size: 15px;
     opacity: 1; color: #64748b; transition: color 0.2s; padding: 2px;
@@ -370,17 +370,16 @@
   
   window.addEventListener('DOMContentLoaded', () => {
     initExpandables();
-    updateKPIs(); // Garante que a tela carregue com os números corretos
+    updateKPIs();
   });
   
-  // Ouve quando você digita ou altera o texto e recalcula o desfoque automaticamente
   document.addEventListener('input', (e) => {
     if (e.target && e.target.classList && e.target.classList.contains('expandable-content')) {
       checkExpandable(e.target);
     }
   });
 
-  // === FUNÇÕES DE MANIPULAÇÃO (CRIAR, EXCLUIR, STATUS) === //
+  // === CRIAR, EXCLUIR, STATUS === //
 
   function changeStatus(selectEl) {
     const card = selectEl.closest('.qa-card');
@@ -451,7 +450,7 @@
     // Insere o novo card no topo e atualiza os números/fundo
     container.insertBefore(div.firstChild, container.firstChild);
     updateKPIs();
-    initExpandables(); // Remove o desfoque automaticamente das caixas novas e vazias!
+    initExpandables();
   }
 
   function updateKPIs() {
@@ -506,7 +505,6 @@
       contents.forEach((el, index) => {
         if (!wasExpanded[index]) el.classList.remove('expanded');
       });
-      // Recalcula o visual de desfoque pós-exportação
       initExpandables();
     });
   }
