@@ -55,7 +55,6 @@
     transition: all 0.2s ease;
     border: 1px dashed transparent;
     
-    /* NOVO: Força textos gigantes a quebrarem de linha para não esmagar a grade */
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: pre-wrap;
@@ -72,7 +71,7 @@
     color: var(--text);
   }
   
-  /* Header Editáveis - Fundo sutil e texto sempre branco para leitura perfeita */
+  /* Header Editáveis */
   .header [contenteditable="true"]:hover {
     background-color: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.4);
@@ -84,7 +83,7 @@
     color: #ffffff !important;
   }
   
-  /* Garante área de clique decente como uma caixa de texto real */
+  /*  área de clique  */
   .text[contenteditable="true"], .expandable-content[contenteditable="true"] {
     min-height: 50px; 
     display: block;
@@ -190,22 +189,22 @@
   .badge-INCORRETA { background: var(--incorreta-bg); color: var(--incorreta-text); border-color: var(--incorreta-border); }
   .badge-ERRO { background: var(--erro-bg); color: var(--erro-text); border-color: var(--erro-border); }
 
-  /* Ícone Lixeira */
-  .delete-btn {
+  /* Ícones de Ação do Card (Duplicar e Lixeira) */
+  .icon-action-btn {
     background: transparent; border: none; cursor: pointer; font-size: 15px;
     opacity: 1; color: #64748b; transition: color 0.2s; padding: 2px;
   }
-  .delete-btn:hover { color: #ef4444; }
+  .icon-action-btn.duplicate:hover { color: var(--primary); }
+  .icon-action-btn.delete:hover { color: #ef4444; }
 
   /* Corpos e Grid */
   .qa-card-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
   
-  /* Section Box e Facilidade de Clique */
   .section-box { 
     border-radius: 6px; padding: 10px 14px; 
     page-break-inside: avoid; break-inside: avoid; 
     cursor: text; 
-    min-width: 0; /* NOVO: Garante que as caixas não estourem a tela horizontalmente */
+    min-width: 0; 
   }
   .field-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; cursor: text; }
   
@@ -235,7 +234,6 @@
   }
   .expandable-content.expanded { max-height: 10000px; }
   
-  /* Remove a limitação de altura e o desfoque ao editar */
   .expandable-content[contenteditable="true"]:focus { max-height: none !important; }
   .expandable-content[contenteditable="true"]:focus::after { display: none !important; }
 
@@ -247,7 +245,6 @@
     background: linear-gradient(rgba(240, 253, 244, 0), rgba(240, 253, 244, 0.95));
   }
   
-  /* Esconde gradiente de desfoque */
   .expandable-content.no-fade::after { display: none !important; }
 
   .expand-toggle {
@@ -265,7 +262,7 @@
   <div class="header">
     <div>
       <span class="badge-tag" contenteditable="true">Relatório de Teste de Qualidade (QA)</span>
-      <h1 contenteditable="true">Título da sua Aplicação/Ferramenta</h1>
+      <h1 contenteditable="true">Avaliação de Acurácia & Respostas do Chatbot</h1>
       <p contenteditable="true">Ordem de Serviço: <strong>[Insira a OS]</strong> &nbsp;•&nbsp; Versão: <strong>[Insira a Versão]</strong> &nbsp;•&nbsp; Data: <strong>[Data]</strong></p>
     </div>
     <div class="rate-box">
@@ -328,7 +325,17 @@
             <option value="INCORRETA" selected>INCORRETA</option>
             <option value="ERRO">ERRO</option>
           </select>
-          <button class="delete-btn" onclick="deleteCard(this)" title="Excluir item">
+          
+          <!-- Botão Duplicar -->
+          <button class="icon-action-btn duplicate" onclick="duplicateCard(this)" title="Duplicar item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+          
+          <!-- Botão Excluir -->
+          <button class="icon-action-btn delete" onclick="deleteCard(this)" title="Excluir item">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -363,7 +370,7 @@
 </div>
 
 <script>
-  // === LIMPEZA DE FORMATAÇÃO AO COLAR (Força colar sem formatação) === //
+  // === LIMPEZA DE FORMATAÇÃO AO COLAR === //
   document.addEventListener('paste', function(e) {
     if (e.target && e.target.getAttribute('contenteditable') === 'true') {
       e.preventDefault(); 
@@ -381,7 +388,6 @@
     }
   });
 
-  // Expande ou recolhe um bloco individual
   function toggleSingle(btn) {
     const el = btn.previousElementSibling;
     const isExpanded = el.classList.toggle('expanded');
@@ -395,7 +401,6 @@
     }
   }
 
-  // Ação Global: Expandir ou recolher todos
   function toggleAllCards(expand) {
     const contents = document.querySelectorAll('.expandable-content');
     const buttons = document.querySelectorAll('.expand-toggle');
@@ -403,7 +408,6 @@
     buttons.forEach(btn => expand ? btn.innerHTML = '<span>Ver menos</span> ▲' : btn.innerHTML = '<span>Ver mais</span> ▼');
   }
 
-  // Filtragem
   function filterBy(status, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -413,7 +417,6 @@
     });
   }
 
-  // Função centralizada para checar se deve mostrar o gradiente ou botão
   function checkExpandable(el) {
     const btn = el.nextElementSibling;
     if (el.scrollHeight <= 74) {
@@ -425,7 +428,6 @@
     }
   }
 
-  // Evento inicial e dinâmico p/ remover o desfoque branco em textos curtos
   function initExpandables() {
     document.querySelectorAll('.expandable-content').forEach(checkExpandable);
   }
@@ -441,7 +443,7 @@
     }
   });
 
-  // === CRIAR, EXCLUIR, STATUS === //
+  // === CRIAR, EXCLUIR, DUPLICAR, STATUS === //
 
   function changeStatus(selectEl) {
     const card = selectEl.closest('.qa-card');
@@ -456,6 +458,22 @@
       btn.closest('.qa-card').remove();
       updateKPIs();
     }
+  }
+  
+  function duplicateCard(btn) {
+    const card = btn.closest('.qa-card');
+    const clone = card.cloneNode(true);
+    
+    // O select perde a opção selecionada no cloneNode via JS se não for hardcoded
+    const originalSelect = card.querySelector('select');
+    const clonedSelect = clone.querySelector('select');
+    clonedSelect.value = originalSelect.value;
+    
+    // Insere o clone logo após o card que foi copiado
+    card.parentNode.insertBefore(clone, card.nextSibling);
+    
+    updateKPIs();
+    initExpandables();
   }
 
   function addNewCard() {
@@ -476,7 +494,13 @@
               <option value="INCORRETA" selected>INCORRETA</option>
               <option value="ERRO">ERRO</option>
             </select>
-            <button class="delete-btn" onclick="deleteCard(this)" title="Excluir item">
+            <button class="icon-action-btn duplicate" onclick="duplicateCard(this)" title="Duplicar item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+            <button class="icon-action-btn delete" onclick="deleteCard(this)" title="Excluir item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -536,7 +560,8 @@
 
   // === EXPORTAÇÃO DE PDF === //
   function exportPDF() {
-    const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .delete-btn');
+    // ESCONDE BOTÕES AO EXPORTAR
+    const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .icon-action-btn');
     const originalDisplays = [];
     
     elementsToHide.forEach((el, i) => {
