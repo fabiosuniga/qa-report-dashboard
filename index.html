@@ -184,10 +184,18 @@
   }
   .status-select:hover { filter: brightness(0.95); }
 
+  /* Cores das badges */
   .badge-CORRETA { background: var(--correta-bg); color: var(--correta-text); border-color: var(--correta-border); }
   .badge-IMPRECISA { background: var(--imprecisa-bg); color: var(--imprecisa-text); border-color: var(--imprecisa-border); }
   .badge-INCORRETA { background: var(--incorreta-bg); color: var(--incorreta-text); border-color: var(--incorreta-border); }
   .badge-ERRO { background: var(--erro-bg); color: var(--erro-text); border-color: var(--erro-border); }
+
+  /* Força o menu flutuante a ficar branco e limpo */
+  .status-select option {
+    background-color: #ffffff;
+    color: #1e293b;
+    font-weight: 600;
+  }
 
   /* Ícones de Ação do Card (Duplicar e Lixeira) */
   .icon-action-btn {
@@ -252,6 +260,12 @@
     font-size: 11px; font-weight: 700; color: var(--primary); background: none; border: none; cursor: pointer; padding: 2px 0;
   }
   .expand-toggle:hover { color: var(--primary-dark); text-decoration: underline; }
+
+   /* Layout sequencial exclusivo para o PDF (Evita bugs de colunas na quebra de página) */
+  .pdf-mode .comparison-grid {
+    display: flex !important;
+    flex-direction: column !important;
+  }
 </style>
 </head>
 <body>
@@ -289,18 +303,18 @@
         Novo Item
       </button>
 
-      <button class="action-btn btn-primary" onclick="exportPDF()">
+      <button class="action-btn btn-primary" onclick="PDF()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect>
         </svg>
-        Exportar PDF
+        ar PDF
       </button>
 
       <button class="action-btn btn-save" onclick="saveHTML()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
-        Exportar Página
+        ar Página
       </button>
 
       <button class="action-btn" onclick="toggleAllCards(true)">Expandir Tudo</button>
@@ -558,8 +572,11 @@
     document.getElementById('filter-erro').innerText = `Erros / Crashes (${counts.ERRO})`;
   }
 
-  // === EXPORTAÇÃO DE PDF === //
+    // === EXPORTAÇÃO DE PDF === //
   function exportPDF() {
+    const containerEl = document.getElementById('report-container');
+    containerEl.classList.add('pdf-mode');
+
     // ESCONDE BOTÕES AO EXPORTAR
     const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .icon-action-btn');
     const originalDisplays = [];
@@ -587,7 +604,6 @@
       sel.style.display = 'none';
     });
 
-    const element = document.getElementById('report-container');
     const opt = {
       margin:       [10, 10, 10, 10],
       filename:     'Relatorio_QA.pdf',
@@ -597,7 +613,9 @@
       pagebreak:    { mode: ['css', 'legacy'] }
     };
 
-    html2pdf().set(opt).from(element).save().then(() => {
+    html2pdf().set(opt).from(containerEl).save().then(() => {
+      containerEl.classList.remove('pdf-mode');
+      
       elementsToHide.forEach((el, i) => el.style.display = originalDisplays[i] );
       contents.forEach((el, index) => {
         if (!wasExpanded[index]) el.classList.remove('expanded');
