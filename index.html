@@ -265,6 +265,7 @@
     <div class="global-actions">
       <button class="action-btn btn-success" onclick="addNewCard()">Novo Item</button>
       <button class="action-btn btn-primary" onclick="exportPDF()">🖨 Exportar PDF</button>
+      <button class="action-btn" style="background: #f1f5f9; color: #0f172a;" onclick="saveHTML()">💾 Salvar Preenchido</button>
       <button class="action-btn" onclick="toggleAllCards(true)">Expandir Tudo</button>
       <button class="action-btn" onclick="toggleAllCards(false)">Recolher Tudo</button>
     </div>
@@ -519,6 +520,32 @@
     });
   });
 }
+
+  // === SALVAR PÁGINA PREENCHIDA === //
+  function saveHTML() {
+    // 1. Grava a opção que você escolheu nos status (Correta, Erro, etc) para não resetar
+    document.querySelectorAll('select').forEach(sel => {
+      Array.from(sel.options).forEach(opt => {
+        if (opt.value === sel.value) {
+          opt.setAttribute('selected', 'selected');
+        } else {
+          opt.removeAttribute('selected');
+        }
+      });
+    });
+
+    // Pega o código da página inteira no estado atual (com seus textos digitados)
+    const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    
+    // Cria um arquivo e faz o download automático
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Relatorio_QA_Preenchido.html'; // Nome do arquivo que vai baixar
+    link.click();
+    URL.revokeObjectURL(url);
+  }
   
 </script>
 
