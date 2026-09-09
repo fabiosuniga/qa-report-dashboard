@@ -66,3 +66,13 @@ Acesse a aplicação pronta para uso via GitHub Pages:
 | **Impressão** | html2pdf.js | Conversão client-side de elementos DOM para documento PDF |
 
 ---
+
+### Instalação como App (PWA)
+
+A aplicação conta com suporte a **PWA (Progressive Web App)**, permitindo que seja instalada localmente no computador ou celular para abrir em janela própria e funcionar offline:
+
+* **Google Chrome / Microsoft Edge (Desktop):** Clique no ícone de instalação (**Instalar aplicativo** ou monitor com seta para baixo) localizado no lado direito da barra de endereços (URL).
+* **Navegadores Mobile (Chrome/Edge no Android):** Toque no menu de três pontos (`⋮`) e selecione **"Adicionar à tela inicial"** ou **"Instalar aplicativo"**.
+* **Safari (iOS):** Toque no botão de compartilhamento e escolha **"Adicionar à Tela de Início"**.
+
+> *A localização e o ícone do botão de instalação podem variar levemente de acordo com a versão e o navegador utilizado.*
