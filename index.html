@@ -134,6 +134,7 @@
   
   .global-actions { display: flex; gap: 8px; }
   .action-btn {
+    display: inline-flex; align-items: center; gap: 6px;
     background: #ffffff; border: 1px solid var(--border); padding: 7px 12px;
     border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text);
     cursor: pointer; transition: all 0.15s;
@@ -176,7 +177,7 @@
   .badge-INCORRETA { background: var(--incorreta-bg); color: var(--incorreta-text); border-color: var(--incorreta-border); }
   .badge-ERRO { background: var(--erro-bg); color: var(--erro-text); border-color: var(--erro-border); }
 
-  /* Ícone Lixeira  */
+  /* Ícone Lixeira */
   .delete-btn {
     background: transparent; border: none; cursor: pointer; font-size: 15px;
     opacity: 1; color: #64748b; transition: color 0.2s; padding: 2px;
@@ -226,9 +227,7 @@
     background: linear-gradient(rgba(240, 253, 244, 0), rgba(240, 253, 244, 0.95));
   }
   
-  /* Esconde gradiente de desfoque */
   .expandable-content.no-fade::after { display: none !important; }
-
   .expand-toggle {
     display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
     font-size: 11px; font-weight: 700; color: var(--primary); background: none; border: none; cursor: pointer; padding: 2px 0;
@@ -263,10 +262,28 @@
       <button class="filter-btn" id="filter-incorreta" onclick="filterBy('INCORRETA', this)">Incorretas (0)</button>
       <button class="filter-btn" id="filter-erro" onclick="filterBy('ERRO', this)">Erros / Crashes (0)</button>
     </div>
-    <div class="global-actions">
-      <button class="action-btn btn-success" onclick="addNewCard()">Novo Item</button>
-      <button class="action-btn btn-primary" onclick="exportPDF()">Exportar PDF</button>
-      <button class="action-btn btn-save" onclick="saveHTML()">Exportar Página</button>
+    <div class="global-actions">    
+      <button class="action-btn btn-success" onclick="addNewCard()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Novo Item
+      </button>
+
+      <button class="action-btn btn-primary" onclick="exportPDF()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Exportar PDF
+      </button>
+
+      <button class="action-btn btn-save" onclick="saveHTML()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Exportar Página
+      </button>
+
       <button class="action-btn" onclick="toggleAllCards(true)">Expandir Tudo</button>
       <button class="action-btn" onclick="toggleAllCards(false)">Recolher Tudo</button>
     </div>
@@ -290,11 +307,11 @@
             <option value="ERRO">ERRO</option>
           </select>
           <button class="delete-btn" onclick="deleteCard(this)" title="Excluir item">
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-  </svg>
-</button>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
         </div>
       </div>
       <div class="qa-card-body">
@@ -306,10 +323,12 @@
           <div class="section-box bot-box">
             <div class="field-title">Resposta Obtida:</div>
             <div class="expandable-content" contenteditable="true"></div>
+            <button class="expand-toggle" onclick="toggleSingle(this)"><span>Ver mais</span> ▼</button>
           </div>
           <div class="section-box expected-box">
             <div class="field-title">Gabarito / Resposta Esperada:</div>
             <div class="expandable-content" contenteditable="true"></div>
+            <button class="expand-toggle" onclick="toggleSingle(this)"><span>Ver mais</span> ▼</button>
           </div>
         </div>
         <div class="section-box diagnosis-box">
@@ -383,7 +402,6 @@
   });
 
   // === CRIAR, EXCLUIR, STATUS === //
-
   function changeStatus(selectEl) {
     const card = selectEl.closest('.qa-card');
     const newStatus = selectEl.value;
@@ -418,11 +436,11 @@
               <option value="ERRO">ERRO</option>
             </select>
             <button class="delete-btn" onclick="deleteCard(this)" title="Excluir item">
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-  </svg>
-</button>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
           </div>
         </div>
         <div class="qa-card-body">
@@ -434,10 +452,12 @@
             <div class="section-box bot-box">
               <div class="field-title">Resposta Obtida:</div>
               <div class="expandable-content" contenteditable="true"></div>
+              <button class="expand-toggle" onclick="toggleSingle(this)"><span>Ver mais</span> ▼</button>
             </div>
             <div class="section-box expected-box">
               <div class="field-title">Gabarito / Resposta Esperada:</div>
               <div class="expandable-content" contenteditable="true"></div>
+              <button class="expand-toggle" onclick="toggleSingle(this)"><span>Ver mais</span> ▼</button>
             </div>
           </div>
           <div class="section-box diagnosis-box">
@@ -450,7 +470,7 @@
     const div = document.createElement('div');
     div.innerHTML = template.trim();
     
-      // Insere o novo card no final da lista
+    // Insere o novo card no final da lista
     container.appendChild(div.firstChild);
     updateKPIs();
     initExpandables();
@@ -477,18 +497,17 @@
   }
 
   // === EXPORTAÇÃO DE PDF === //
-    // === EXPORTAÇÃO DE PDF === //
   function exportPDF() {
     const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .delete-btn');
     const originalDisplays = [];
     
-    // 1. Ocultar botões
+    //  Ocultar botões
     elementsToHide.forEach((el, i) => {
       originalDisplays[i] = el.style.display;
       el.style.display = 'none';
     });
 
-    // 2. Expandir conteúdos
+    //  Expandir conteúdos
     const contents = document.querySelectorAll('.expandable-content');
     const wasExpanded = [];
     contents.forEach((el, index) => {
@@ -496,7 +515,7 @@
       el.classList.add('expanded');
     });
 
-    // 3. CORREÇÃO DO STATUS: Transforma <select> em texto puro pro PDF não cortar a palavra
+    // Transforma <select> em texto puro pro PDF não cortar a palavra
     const selects = document.querySelectorAll('.status-select');
     selects.forEach(sel => {
       const span = document.createElement('span');
@@ -520,24 +539,21 @@
 
     // Gera o PDF
     html2pdf().set(opt).from(element).save().then(() => {
-      // Devolve botões e tamanhos
       elementsToHide.forEach((el, i) => el.style.display = originalDisplays[i] );
       contents.forEach((el, index) => {
         if (!wasExpanded[index]) el.classList.remove('expanded');
       });
       
-      // Remove o texto puro e devolve os <selects> originais
       document.querySelectorAll('span[data-temp="true"]').forEach(span => span.remove());
       selects.forEach(sel => sel.style.display = '');
 
-      // Recalcula o visual de desfoque pós-exportação
       initExpandables();
     });
   }
 
   // === SALVAR PÁGINA PREENCHIDA === //
   function saveHTML() {
-    // 1. Grava a opção que você escolheu nos status (Correta, Erro, etc) para não resetar
+    // Grava a opção que você escolheu nos status (Correta, Erro, etc) para não resetar
     document.querySelectorAll('select').forEach(sel => {
       Array.from(sel.options).forEach(opt => {
         if (opt.value === sel.value) {
@@ -548,7 +564,7 @@
       });
     });
 
-    // Pega o código da página inteira no estado atual (com seus textos digitados)
+    // Pega o código da página inteira no estado atual 
     const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
     
     // Cria um arquivo e faz o download automático
@@ -561,6 +577,16 @@
     URL.revokeObjectURL(url);
   }
   
+  // === SERVICE WORKER (PWA) === //
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        console.log('Service Worker registrado com sucesso!', reg);
+      }).catch(err => {
+        console.log('Falha ao registrar Service Worker', err);
+      });
+    });
+  }
 </script>
 
 </body>
