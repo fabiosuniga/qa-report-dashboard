@@ -67,10 +67,15 @@
     color: var(--text);
   }
   .header [contenteditable="true"]:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
   }
-  .header [contenteditable="true"]:focus { color: var(--text); }
+  .header [contenteditable="true"]:focus {
+    background-color: rgba(0, 0, 0, 0.25); /* Fundo escuro sutil para indicar edição */
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4); /* Bordinha branca delicada */
+    color: #ffffff !important; /* Força o texto a ficar sempre branco e nítido */
+  }
   
   /* Garante área de clique mesmo se o texto estiver vazio */
   .text[contenteditable="true"], .expandable-content[contenteditable="true"] {
