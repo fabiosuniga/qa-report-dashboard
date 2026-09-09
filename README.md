@@ -43,7 +43,7 @@ Gera indicadores automáticos de conformidade e relatórios prontos para distrib
 ### Demonstração e Uso
 
 Acesse a aplicação pronta para uso via GitHub Pages:  
-**<a href="https://fabiosuniga.github.io/qa-report-dashboard/" target="_blank" rel="noopener noreferrer">Acessar Live Demo</a>**
+[![Acessar Live Demo](https://img.shields.io/badge/Demo-Acessar%20Live%20Demo-success?style=for-the-badge&logo=githubpages&logoColor=white)](https://fabiosuniga.github.io/qa-report-dashboard/)
 
 #### Fluxo de Trabalho
 
