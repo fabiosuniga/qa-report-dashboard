@@ -450,8 +450,8 @@
     const div = document.createElement('div');
     div.innerHTML = template.trim();
     
-    // Insere o novo card no topo e atualiza os números/fundo
-    container.insertBefore(div.firstChild, container.firstChild);
+      // Insere o novo card no final da lista
+    container.appendChild(div.firstChild);
     updateKPIs();
     initExpandables();
   }
