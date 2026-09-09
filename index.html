@@ -257,9 +257,9 @@
   <div class="toolbar">
     <div class="filters">
       <button class="filter-btn active" id="filter-all" onclick="filterBy('ALL', this)">Todos (0)</button>
-      <button class="filter-btn" id="filter-correta" onclick="filterBy('CORRETA', this)">✔ Corretas (0)</button>
-      <button class="filter-btn" id="filter-imprecisa" onclick="filterBy('IMPRECISA', this)">⚠ Imprecisas (0)</button>
-      <button class="filter-btn" id="filter-incorreta" onclick="filterBy('INCORRETA', this)">✖ Incorretas (0)</button>
+      <button class="filter-btn" id="filter-correta" onclick="filterBy('CORRETA', this)">Corretas (0)</button>
+      <button class="filter-btn" id="filter-imprecisa" onclick="filterBy('IMPRECISA', this)">Imprecisas (0)</button>
+      <button class="filter-btn" id="filter-incorreta" onclick="filterBy('INCORRETA', this)">Incorretas (0)</button>
       <button class="filter-btn" id="filter-erro" onclick="filterBy('ERRO', this)">Erros / Crashes (0)</button>
     </div>
     <div class="global-actions">
@@ -468,9 +468,9 @@
 
     // Atualiza Textos Filtro
     document.getElementById('filter-all').innerText = `Todos (${total})`;
-    document.getElementById('filter-correta').innerText = `✔ Corretas (${counts.CORRETA})`;
-    document.getElementById('filter-imprecisa').innerText = `⚠ Imprecisas (${counts.IMPRECISA})`;
-    document.getElementById('filter-incorreta').innerText = `✖ Incorretas (${counts.INCORRETA})`;
+    document.getElementById('filter-correta').innerText = `Corretas (${counts.CORRETA})`;
+    document.getElementById('filter-imprecisa').innerText = `Imprecisas (${counts.IMPRECISA})`;
+    document.getElementById('filter-incorreta').innerText = `Incorretas (${counts.INCORRETA})`;
     document.getElementById('filter-erro').innerText = `Erros / Crashes (${counts.ERRO})`;
   }
 
