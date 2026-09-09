@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Interativo de QA - Vazio</title>
+<!-- Biblioteca para gerar o PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    
+    --correta-bg: #dcfce7;
+    --correta-text: #15803d;
+    --correta-border: #86efac;
+    
+    --imprecisa-bg: #fef3c7;
+    --imprecisa-text: #b45309;
+    --imprecisa-border: #fde68a;
+    
+    --incorreta-bg: #fee2e2;
+    --incorreta-text: #b91c1c;
+    --incorreta-border: #fca5a5;
+    
+    --erro-bg: #fecdd3;
+    --erro-text: #9f1239;
+    --erro-border: #fda4af;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* Estilos para edição */
+  [contenteditable="true"] {
+    outline: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    border: 1px dashed transparent;
+  }
+  [contenteditable="true"]:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.2);
+    cursor: text;
+  }
+  [contenteditable="true"]:focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 2px var(--primary);
+    border-color: transparent;
+    color: var(--text);
+  }
+  .header [contenteditable="true"]:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .header [contenteditable="true"]:focus { color: var(--text); }
+  
+  /* Garante área de clique mesmo se o texto estiver vazio */
+  .text[contenteditable="true"], .expandable-content[contenteditable="true"] {
+    min-height: 22px; 
+    display: block;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+    border-radius: 12px;
+    padding: 28px 32px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .badge-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .header h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .header p { font-size: 13px; color: #93c5fd; }
+  .rate-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 140px;
+  }
+  .rate-box .rate-label { font-size: 11px; text-transform: uppercase; color: #93c5fd; font-weight: 700; }
+  .rate-box .rate-num { font-size: 28px; font-weight: 800; color: #ffffff; }
+  .rate-box .rate-sub { font-size: 11px; color: #cbd5e1; }
+
+  /* Toolbar & Buttons */
+  .toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+  }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    background: #ffffff; border: 1px solid var(--border); padding: 7px 14px;
+    border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s ease; color: var(--text-muted);
+  }
+  .filter-btn:hover { border-color: #cbd5e1; background: #f1f5f9; }
+  .filter-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; }
+  
+  .global-actions { display: flex; gap: 8px; }
+  .action-btn {
+    background: #ffffff; border: 1px solid var(--border); padding: 7px 12px;
+    border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .action-btn:hover { background: #f8fafc; border-color: #94a3b8; }
+  .btn-primary { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+  .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+  .btn-success { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+  .btn-success:hover { background: #c7d2fe; border-color: #a5b4fc; }
+
+  /* Cards */
+  .cards-list { display: flex; flex-direction: column; gap: 16px; }
+  .qa-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); overflow: hidden; transition: box-shadow 0.2s ease;
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  .qa-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
+  .qa-card-header {
+    background: #f8fafc; border-bottom: 1px solid var(--border); padding: 12px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .item-id { font-weight: 800; font-size: 14px; color: #0f172a; }
+  .pill-type { background: #e0e7ff; color: #3730a3; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  .pill-company { background: #f1f5f9; color: #475569; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  
+  /* Select que funciona como badge */
+  .status-select {
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+    letter-spacing: 0.5px; cursor: pointer; outline: none; border: 1px solid transparent;
+    text-align: center; font-family: inherit; transition: filter 0.2s;
+  }
+  .status-select:hover { filter: brightness(0.95); }
+
+  .badge-CORRETA { background: var(--correta-bg); color: var(--correta-text); border-color: var(--correta-border); }
+  .badge-IMPRECISA { background: var(--imprecisa-bg); color: var(--imprecisa-text); border-color: var(--imprecisa-border); }
+  .badge-INCORRETA { background: var(--incorreta-bg); color: var(--incorreta-text); border-color: var(--incorreta-border); }
+  .badge-ERRO { background: var(--erro-bg); color: var(--erro-text); border-color: var(--erro-border); }
+
+  /* Ícone Lixeira corrigido (Transparência zero, cor base) */
+  .delete-btn {
+    background: transparent; border: none; cursor: pointer; font-size: 15px;
+    opacity: 1; color: #64748b; transition: color 0.2s; padding: 2px;
+  }
+  .delete-btn:hover { color: #ef4444; }
+
+  /* Corpos e Grid */
+  .qa-card-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .section-box { border-radius: 6px; padding: 10px 14px; }
+  .field-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  
+  .prompt-box { background: #f0f9ff; border: 1px solid #bae6fd; }
+  .prompt-box .field-title { color: #0369a1; }
+  .prompt-box .text { font-weight: 600; color: #0c4a6e; font-size: 13.5px; }
+
+  .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+  .bot-box { background: #ffffff; border: 1px solid var(--border); }
+  .bot-box .field-title { color: #475569; }
+
+  .expected-box { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .expected-box .field-title { color: #15803d; }
+  .expected-box .expandable-content { color: #14532d; font-weight: 500; }
+
+  .diagnosis-box { background: #fffbeb; border: 1px solid #fef3c7; }
+  .diagnosis-box .field-title { color: #b45309; }
+  .diagnosis-box .text { font-size: 12.5px; font-style: italic; color: #78350f; }
+
+  /* Expansão e Limitação */
+  .expandable-content {
+    position: relative; max-height: 72px; overflow: hidden;
+    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 13px; color: #334155; line-height: 1.5;
+  }
+  .expandable-content.expanded { max-height: 10000px; }
+  
+  /* Remove a limitação de altura e o desfoque ao editar */
+  .expandable-content[contenteditable="true"]:focus { max-height: none !important; }
+  .expandable-content[contenteditable="true"]:focus::after { display: none !important; }
+
+  .expandable-content:not(.expanded)::after {
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 32px;
+    background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95)); pointer-events: none;
+  }
+  .expected-box .expandable-content:not(.expanded)::after {
+    background: linear-gradient(rgba(240, 253, 244, 0), rgba(240, 253, 244, 0.95));
+  }
+  
+  /* Esconde gradiente de desfoque */
+  .expandable-content.no-fade::after { display: none !important; }
+
+  .expand-toggle {
+    display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+    font-size: 11px; font-weight: 700; color: var(--primary); background: none; border: none; cursor: pointer; padding: 2px 0;
+  }
+  .expand-toggle:hover { color: var(--primary-dark); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="container" id="report-container">
+
+  <!-- Header Executivo -->
+  <div class="header">
+    <div>
+      <span class="badge-tag" contenteditable="true">Relatório de Teste de Qualidade (QA)</span>
+      <h1 contenteditable="true">Avaliação de Acurácia & Respostas do Chatbot</h1>
+      <p contenteditable="true">Ordem de Serviço: <strong>[Insira a OS]</strong> &nbsp;•&nbsp; Versão: <strong>[Insira a Versão]</strong> &nbsp;•&nbsp; Data: <strong>[Data]</strong></p>
+    </div>
+    <div class="rate-box">
+      <div class="rate-label" contenteditable="true">Taxa de Sucesso</div>
+      <div class="rate-num" id="kpi-rate-num" contenteditable="true">0,0%</div>
+      <div class="rate-sub" id="kpi-rate-sub" contenteditable="true">0 de 0 validadas</div>
+    </div>
+  </div>
+
+  <!-- Barra de Filtros e Ações Globais -->
+  <div class="toolbar">
+    <div class="filters">
+      <button class="filter-btn active" id="filter-all" onclick="filterBy('ALL', this)">Todos (0)</button>
+      <button class="filter-btn" id="filter-correta" onclick="filterBy('CORRETA', this)">✔ Corretas (0)</button>
+      <button class="filter-btn" id="filter-imprecisa" onclick="filterBy('IMPRECISA', this)">⚠ Imprecisas (0)</button>
+      <button class="filter-btn" id="filter-incorreta" onclick="filterBy('INCORRETA', this)">✖ Incorretas (0)</button>
+      <button class="filter-btn" id="filter-erro" onclick="filterBy('ERRO', this)">Erros / Crashes (0)</button>
+    </div>
+    <div class="global-actions">
+      <button class="action-btn btn-success" onclick="addNewCard()">Novo Item</button>
+      <button class="action-btn btn-primary" onclick="exportPDF()">🖨 Exportar PDF</button>
+      <button class="action-btn" onclick="toggleAllCards(true)">Expandir Tudo</button>
+      <button class="action-btn" onclick="toggleAllCards(false)">Recolher Tudo</button>
+    </div>
+  </div>
+
+  <!-- Lista de Cards -->
+  <div class="cards-list" id="cardsContainer">
+    <!-- Card Inicial Vazio -->
+    <div class="qa-card" data-status="INCORRETA">
+      <div class="qa-card-header">
+        <div class="header-left">
+          <span class="item-id" contenteditable="true">Item #01</span>
+          <span class="pill-type" contenteditable="true">SISTEMA</span>
+          <span class="pill-company" contenteditable="true">Empresa: Nova</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select class="status-select badge-INCORRETA" onchange="changeStatus(this)">
+            <option value="CORRETA">CORRETA</option>
+            <option value="IMPRECISA">IMPRECISA</option>
+            <option value="INCORRETA" selected>INCORRETA</option>
+            <option value="ERRO">ERRO</option>
+          </select>
+          <button class="delete-btn" onclick="deleteCard(this)" title="Excluir item">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+  </svg>
+</button>
+        </div>
+      </div>
+      <div class="qa-card-body">
+        <div class="section-box prompt-box">
+          <div class="field-title">Pergunta / Ação:</div>
+          <div class="text" contenteditable="true"></div>
+        </div>
+        <div class="comparison-grid">
+          <div class="section-box bot-box">
+            <div class="field-title">Resposta Obtida:</div>
+            <div class="expandable-content" contenteditable="true"></div>
+          </div>
+          <div class="section-box expected-box">
+            <div class="field-title">Gabarito / Resposta Esperada:</div>
+            <div class="expandable-content" contenteditable="true"></div>
+          </div>
+        </div>
+        <div class="section-box diagnosis-box">
+          <div class="field-title">Diagnóstico / Comentário do QA:</div>
+          <div class="text" contenteditable="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Expande ou recolhe um bloco individual
+  function toggleSingle(btn) {
+    const el = btn.previousElementSibling;
+    const isExpanded = el.classList.toggle('expanded');
+    const label = btn.querySelector('span');
+    if (isExpanded) {
+      label.textContent = 'Ver menos';
+      btn.innerHTML = '<span>Ver menos</span> ▲';
+    } else {
+      label.textContent = 'Ver mais';
+      btn.innerHTML = '<span>Ver mais</span> ▼';
+    }
+  }
+
+  // Ação Global: Expandir ou recolher todos
+  function toggleAllCards(expand) {
+    const contents = document.querySelectorAll('.expandable-content');
+    const buttons = document.querySelectorAll('.expand-toggle');
+    contents.forEach(el => expand ? el.classList.add('expanded') : el.classList.remove('expanded'));
+    buttons.forEach(btn => expand ? btn.innerHTML = '<span>Ver menos</span> ▲' : btn.innerHTML = '<span>Ver mais</span> ▼');
+  }
+
+  // Filtragem
+  function filterBy(status, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.qa-card');
+    cards.forEach(card => {
+      card.style.display = (status === 'ALL' || card.getAttribute('data-status') === status) ? 'block' : 'none';
+    });
+  }
+
+  // Função centralizada para checar se deve mostrar o gradiente ou botão
+  function checkExpandable(el) {
+    const btn = el.nextElementSibling;
+    if (el.scrollHeight <= 74) {
+      el.classList.add('no-fade');
+      if (btn && btn.classList.contains('expand-toggle')) btn.style.display = 'none';
+    } else {
+      el.classList.remove('no-fade');
+      if (btn && btn.classList.contains('expand-toggle')) btn.style.display = 'inline-flex';
+    }
+  }
+
+  // Evento inicial e dinâmico p/ remover o desfoque branco em textos curtos
+  function initExpandables() {
+    document.querySelectorAll('.expandable-content').forEach(checkExpandable);
+  }
+  
+  window.addEventListener('DOMContentLoaded', () => {
+    initExpandables();
+    updateKPIs(); // Garante que a tela carregue com os números corretos
+  });
+  
+  // Ouve quando você digita ou altera o texto e recalcula o desfoque automaticamente
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('expandable-content')) {
+      checkExpandable(e.target);
+    }
+  });
+
+  // === FUNÇÕES DE MANIPULAÇÃO (CRIAR, EXCLUIR, STATUS) === //
+
+  function changeStatus(selectEl) {
+    const card = selectEl.closest('.qa-card');
+    const newStatus = selectEl.value;
+    card.setAttribute('data-status', newStatus); 
+    selectEl.className = `status-select badge-${newStatus}`; 
+    updateKPIs(); 
+  }
+
+  function deleteCard(btn) {
+    if(confirm("Tem certeza que deseja remover este card do relatório?")) {
+      btn.closest('.qa-card').remove();
+      updateKPIs();
+    }
+  }
+
+  function addNewCard() {
+    const container = document.getElementById('cardsContainer');
+    const cardsCount = document.querySelectorAll('.qa-card').length + 1;
+    const template = `
+      <div class="qa-card" data-status="INCORRETA">
+        <div class="qa-card-header">
+          <div class="header-left">
+            <span class="item-id" contenteditable="true">Item #${cardsCount.toString().padStart(2, '0')}</span>
+            <span class="pill-type" contenteditable="true">SISTEMA</span>
+            <span class="pill-company" contenteditable="true">Empresa: Nova</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <select class="status-select badge-INCORRETA" onchange="changeStatus(this)">
+              <option value="CORRETA">CORRETA</option>
+              <option value="IMPRECISA">IMPRECISA</option>
+              <option value="INCORRETA" selected>INCORRETA</option>
+              <option value="ERRO">ERRO</option>
+            </select>
+            <button class="delete-btn" onclick="deleteCard(this)" title="Excluir item">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+  </svg>
+</button>
+          </div>
+        </div>
+        <div class="qa-card-body">
+          <div class="section-box prompt-box">
+            <div class="field-title">Pergunta / Ação:</div>
+            <div class="text" contenteditable="true"></div>
+          </div>
+          <div class="comparison-grid">
+            <div class="section-box bot-box">
+              <div class="field-title">Resposta Obtida:</div>
+              <div class="expandable-content" contenteditable="true"></div>
+            </div>
+            <div class="section-box expected-box">
+              <div class="field-title">Gabarito / Resposta Esperada:</div>
+              <div class="expandable-content" contenteditable="true"></div>
+            </div>
+          </div>
+          <div class="section-box diagnosis-box">
+            <div class="field-title">Diagnóstico / Comentário do QA:</div>
+            <div class="text" contenteditable="true"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const div = document.createElement('div');
+    div.innerHTML = template.trim();
+    
+    // Insere o novo card no topo e atualiza os números/fundo
+    container.insertBefore(div.firstChild, container.firstChild);
+    updateKPIs();
+    initExpandables(); // Remove o desfoque automaticamente das caixas novas e vazias!
+  }
+
+  function updateKPIs() {
+    const cards = document.querySelectorAll('.qa-card');
+    const total = cards.length;
+    let counts = { CORRETA: 0, IMPRECISA: 0, INCORRETA: 0, ERRO: 0 };
+    
+    cards.forEach(c => counts[c.getAttribute('data-status')]++);
+    
+    // Atualiza Textos Cabeçalho
+    const pct = total === 0 ? 0 : Math.round((counts.CORRETA / total) * 1000) / 10;
+    document.getElementById('kpi-rate-num').innerText = pct.toFixed(1).replace('.', ',') + '%';
+    document.getElementById('kpi-rate-sub').innerText = `${counts.CORRETA} de ${total} validadas`;
+
+    // Atualiza Textos Filtro
+    document.getElementById('filter-all').innerText = `Todos (${total})`;
+    document.getElementById('filter-correta').innerText = `✔ Corretas (${counts.CORRETA})`;
+    document.getElementById('filter-imprecisa').innerText = `⚠ Imprecisas (${counts.IMPRECISA})`;
+    document.getElementById('filter-incorreta').innerText = `✖ Incorretas (${counts.INCORRETA})`;
+    document.getElementById('filter-erro').innerText = `Erros / Crashes (${counts.ERRO})`;
+  }
+
+  // === EXPORTAÇÃO DE PDF === //
+  function exportPDF() {
+    const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .delete-btn');
+    const originalDisplays = [];
+    
+    elementsToHide.forEach((el, i) => {
+      originalDisplays[i] = el.style.display;
+      el.style.display = 'none';
+    });
+
+    const contents = document.querySelectorAll('.expandable-content');
+    const wasExpanded = [];
+    contents.forEach((el, index) => {
+      wasExpanded[index] = el.classList.contains('expanded');
+      el.classList.add('expanded');
+    });
+
+    const element = document.getElementById('report-container');
+    const opt = {
+      margin:       [10, 10, 10, 10],
+      filename:     'Relatorio_QA.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      elementsToHide.forEach((el, i) => el.style.display = originalDisplays[i] );
+      contents.forEach((el, index) => {
+        if (!wasExpanded[index]) el.classList.remove('expanded');
+      });
+      // Recalcula o visual de desfoque pós-exportação
+      initExpandables();
+    });
+  }
+</script>
+
+</body>
+</html>
