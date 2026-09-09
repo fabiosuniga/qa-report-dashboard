@@ -44,6 +44,8 @@ Gera indicadores automáticos de conformidade e relatórios prontos para distrib
 
 Acesse a aplicação pronta para uso via GitHub Pages:  
 [![Acessar Live Demo](https://img.shields.io/badge/Demo_Online-Acessar_Painel-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://fabiosuniga.github.io/qa-report-dashboard/)
+Veja um video do fluxo do programa:  
+[![Acessar Youtube](https://youtu.be/cK9l_P9ei2s)
 
 #### Fluxo de Trabalho
 
