@@ -143,13 +143,14 @@
   .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
   .btn-success { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
   .btn-success:hover { background: #c7d2fe; border-color: #a5b4fc; }
+  .btn-save { background: #abd5ff; color: #0252a3; border-color: #93c5fd; }
+  .btn-save:hover { background: #93c5fd; border-color: #60a5fa; }
 
   /* Cards */
   .cards-list { display: flex; flex-direction: column; gap: 16px; }
   .qa-card {
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); overflow: hidden; transition: box-shadow 0.2s ease;
-    page-break-inside: avoid; break-inside: avoid;
   }
   .qa-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
   .qa-card-header {
@@ -184,7 +185,7 @@
 
   /* Corpos e Grid */
   .qa-card-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-  .section-box { border-radius: 6px; padding: 10px 14px; }
+  .section-box { border-radius: 6px; padding: 10px 14px; page-break-inside: avoid; break-inside: avoid; }
   .field-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
   
   .prompt-box { background: #f0f9ff; border: 1px solid #bae6fd; }
@@ -264,8 +265,8 @@
     </div>
     <div class="global-actions">
       <button class="action-btn btn-success" onclick="addNewCard()">Novo Item</button>
-      <button class="action-btn btn-primary" onclick="exportPDF()">🖨 Exportar PDF</button>
-      <button class="action-btn" style="background: #f1f5f9; color: #0f172a;" onclick="saveHTML()">💾 Salvar Preenchido</button>
+      <button class="action-btn btn-primary" onclick="exportPDF()">Exportar PDF</button>
+      <button class="action-btn btn-save" onclick="saveHTML()">Exportar Página</button>
       <button class="action-btn" onclick="toggleAllCards(true)">Expandir Tudo</button>
       <button class="action-btn" onclick="toggleAllCards(false)">Recolher Tudo</button>
     </div>
@@ -476,20 +477,35 @@
   }
 
   // === EXPORTAÇÃO DE PDF === //
+    // === EXPORTAÇÃO DE PDF === //
   function exportPDF() {
     const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .delete-btn');
     const originalDisplays = [];
     
+    // 1. Ocultar botões
     elementsToHide.forEach((el, i) => {
       originalDisplays[i] = el.style.display;
       el.style.display = 'none';
     });
 
+    // 2. Expandir conteúdos
     const contents = document.querySelectorAll('.expandable-content');
     const wasExpanded = [];
     contents.forEach((el, index) => {
       wasExpanded[index] = el.classList.contains('expanded');
       el.classList.add('expanded');
+    });
+
+    // 3. CORREÇÃO DO STATUS: Transforma <select> em texto puro pro PDF não cortar a palavra
+    const selects = document.querySelectorAll('.status-select');
+    selects.forEach(sel => {
+      const span = document.createElement('span');
+      span.className = sel.className;
+      span.style.display = 'inline-block';
+      span.innerText = sel.options[sel.selectedIndex].text;
+      span.setAttribute('data-temp', 'true');
+      sel.parentNode.insertBefore(span, sel);
+      sel.style.display = 'none';
     });
 
     const element = document.getElementById('report-container');
@@ -502,24 +518,22 @@
       pagebreak:    { mode: ['css', 'legacy'] }
     };
 
+    // Gera o PDF
     html2pdf().set(opt).from(element).save().then(() => {
+      // Devolve botões e tamanhos
       elementsToHide.forEach((el, i) => el.style.display = originalDisplays[i] );
       contents.forEach((el, index) => {
         if (!wasExpanded[index]) el.classList.remove('expanded');
       });
+      
+      // Remove o texto puro e devolve os <selects> originais
+      document.querySelectorAll('span[data-temp="true"]').forEach(span => span.remove());
+      selects.forEach(sel => sel.style.display = '');
+
+      // Recalcula o visual de desfoque pós-exportação
       initExpandables();
     });
   }
-  
-  if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('Service Worker registrado com sucesso!', reg);
-    }).catch(err => {
-      console.log('Falha ao registrar Service Worker', err);
-    });
-  });
-}
 
   // === SALVAR PÁGINA PREENCHIDA === //
   function saveHTML() {
