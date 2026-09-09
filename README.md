@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/header-qa.png" alt="Header Painel Interativo de QA" width="100%">
-</p>
+![Header](assets/header-qa-readme.png)
 
 # Painel Interativo de QA (QA Report Dashboard)
 
@@ -9,9 +7,7 @@
 
 ### Visão Geral
 
-![Visão Geral do Painel](<p align="center">
-  <img src="assets/tela-inicial.png" alt="Visão Geral do Painel" width="100%">
-</p>)
+![Visão Geral do Painel](assets/tela-inicial.PNG)
 
 # Painel Interativo de QA (QA Report Dashboard)
 
@@ -56,10 +52,7 @@ Acesse a aplicação pronta para uso via GitHub Pages:
 3. **Auditoria:** Selecione o status de validação no seletor correspondente.
 4. **Relatório:** Clique em **Exportar PDF** ou salve a versão estática navegável para compartilhamento.
 
-![Demonstração da Exportação em PDF](<p align="center">
-  <img src="assets/tela-inicial-pdf.png" alt="Visão Geral do PDF" width="100%">
-</p>
-)
+![Visão Geral do PDF](assets/tela-inicial-pdf.png)
 
 ---
 
