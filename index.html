@@ -54,6 +54,11 @@
     border-radius: 4px;
     transition: all 0.2s ease;
     border: 1px dashed transparent;
+    
+    /* NOVO: Força textos gigantes a quebrarem de linha para não esmagar a grade */
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
   }
   [contenteditable="true"]:hover {
     background-color: rgba(0, 0, 0, 0.04);
@@ -66,21 +71,24 @@
     border-color: transparent;
     color: var(--text);
   }
+  
+  /* Header Editáveis - Fundo sutil e texto sempre branco para leitura perfeita */
   .header [contenteditable="true"]:hover {
     background-color: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.4);
     color: #ffffff;
   }
   .header [contenteditable="true"]:focus {
-    background-color: rgba(0, 0, 0, 0.25); /* Fundo escuro sutil para indicar edição */
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4); /* Bordinha branca delicada */
-    color: #ffffff !important; /* Força o texto a ficar sempre branco e nítido */
+    background-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+    color: #ffffff !important;
   }
   
-  /* Garante área de clique mesmo se o texto estiver vazio */
+  /* Garante área de clique decente como uma caixa de texto real */
   .text[contenteditable="true"], .expandable-content[contenteditable="true"] {
-    min-height: 22px; 
+    min-height: 50px; 
     display: block;
+    width: 100%;
   }
 
   /* Header */
@@ -191,8 +199,15 @@
 
   /* Corpos e Grid */
   .qa-card-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-  .section-box { border-radius: 6px; padding: 10px 14px; page-break-inside: avoid; break-inside: avoid; }
-  .field-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  
+  /* Section Box e Facilidade de Clique */
+  .section-box { 
+    border-radius: 6px; padding: 10px 14px; 
+    page-break-inside: avoid; break-inside: avoid; 
+    cursor: text; 
+    min-width: 0; /* NOVO: Garante que as caixas não estourem a tela horizontalmente */
+  }
+  .field-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; cursor: text; }
   
   .prompt-box { background: #f0f9ff; border: 1px solid #bae6fd; }
   .prompt-box .field-title { color: #0369a1; }
@@ -232,7 +247,9 @@
     background: linear-gradient(rgba(240, 253, 244, 0), rgba(240, 253, 244, 0.95));
   }
   
+  /* Esconde gradiente de desfoque */
   .expandable-content.no-fade::after { display: none !important; }
+
   .expand-toggle {
     display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
     font-size: 11px; font-weight: 700; color: var(--primary); background: none; border: none; cursor: pointer; padding: 2px 0;
@@ -346,6 +363,24 @@
 </div>
 
 <script>
+  // === LIMPEZA DE FORMATAÇÃO AO COLAR (Força colar sem formatação) === //
+  document.addEventListener('paste', function(e) {
+    if (e.target && e.target.getAttribute('contenteditable') === 'true') {
+      e.preventDefault(); 
+      const text = e.clipboardData.getData('text/plain'); 
+      document.execCommand('insertText', false, text); 
+    }
+  });
+
+  // === FACILITAR O CLIQUE NA CAIXA VAZIA === //
+  document.addEventListener('click', (e) => {
+    const box = e.target.closest('.section-box');
+    if (box && (e.target === box || e.target.classList.contains('field-title'))) {
+      const edit = box.querySelector('[contenteditable="true"]');
+      if(edit) edit.focus();
+    }
+  });
+
   // Expande ou recolhe um bloco individual
   function toggleSingle(btn) {
     const el = btn.previousElementSibling;
@@ -407,6 +442,7 @@
   });
 
   // === CRIAR, EXCLUIR, STATUS === //
+
   function changeStatus(selectEl) {
     const card = selectEl.closest('.qa-card');
     const newStatus = selectEl.value;
@@ -475,7 +511,6 @@
     const div = document.createElement('div');
     div.innerHTML = template.trim();
     
-    // Insere o novo card no final da lista
     container.appendChild(div.firstChild);
     updateKPIs();
     initExpandables();
@@ -488,12 +523,10 @@
     
     cards.forEach(c => counts[c.getAttribute('data-status')]++);
     
-    // Atualiza Textos Cabeçalho
     const pct = total === 0 ? 0 : Math.round((counts.CORRETA / total) * 1000) / 10;
     document.getElementById('kpi-rate-num').innerText = pct.toFixed(1).replace('.', ',') + '%';
     document.getElementById('kpi-rate-sub').innerText = `${counts.CORRETA} de ${total} validadas`;
 
-    // Atualiza Textos Filtro
     document.getElementById('filter-all').innerText = `Todos (${total})`;
     document.getElementById('filter-correta').innerText = `Corretas (${counts.CORRETA})`;
     document.getElementById('filter-imprecisa').innerText = `Imprecisas (${counts.IMPRECISA})`;
@@ -506,13 +539,11 @@
     const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .delete-btn');
     const originalDisplays = [];
     
-    //  Ocultar botões
     elementsToHide.forEach((el, i) => {
       originalDisplays[i] = el.style.display;
       el.style.display = 'none';
     });
 
-    //  Expandir conteúdos
     const contents = document.querySelectorAll('.expandable-content');
     const wasExpanded = [];
     contents.forEach((el, index) => {
@@ -520,7 +551,6 @@
       el.classList.add('expanded');
     });
 
-    // Transforma <select> em texto puro pro PDF não cortar a palavra
     const selects = document.querySelectorAll('.status-select');
     selects.forEach(sel => {
       const span = document.createElement('span');
@@ -542,7 +572,6 @@
       pagebreak:    { mode: ['css', 'legacy'] }
     };
 
-    // Gera o PDF
     html2pdf().set(opt).from(element).save().then(() => {
       elementsToHide.forEach((el, i) => el.style.display = originalDisplays[i] );
       contents.forEach((el, index) => {
@@ -558,26 +587,19 @@
 
   // === SALVAR PÁGINA PREENCHIDA === //
   function saveHTML() {
-    // Grava a opção que você escolheu nos status (Correta, Erro, etc) para não resetar
     document.querySelectorAll('select').forEach(sel => {
       Array.from(sel.options).forEach(opt => {
-        if (opt.value === sel.value) {
-          opt.setAttribute('selected', 'selected');
-        } else {
-          opt.removeAttribute('selected');
-        }
+        if (opt.value === sel.value) opt.setAttribute('selected', 'selected');
+        else opt.removeAttribute('selected');
       });
     });
 
-    // Pega o código da página inteira no estado atual 
     const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-    
-    // Cria um arquivo e faz o download automático
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'Relatorio_QA_Preenchido.html'; // Nome do arquivo que vai baixar
+    link.download = 'Relatorio_QA_Preenchido.html';
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -586,7 +608,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').then(reg => {
-        console.log('Service Worker registrado com sucesso!', reg);
+        console.log('Service Worker registrado com sucesso!');
       }).catch(err => {
         console.log('Falha ao registrar Service Worker', err);
       });
