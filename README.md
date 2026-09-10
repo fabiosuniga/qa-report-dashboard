@@ -6,9 +6,10 @@
 ---
 ### Demonstração e Uso
 
-Acesse os conteúdos da aplicação:  
+Acesse os conteúdos da aplicação:
 [![Acessar Live Demo](https://img.shields.io/badge/Demo_Online-Acessar_Painel-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://fabiosuniga.github.io/qa-report-dashboard/)
-[![Acessar YouTube](https://img.shields.io/badge/YouTube-Assistir_Demonstração-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cK9l_P9ei2s)
+&nbsp;&nbsp;
+[![Acessar YouTube](https://img.shields.io/badge/YouTube-Assistir_Demonstração-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](URL_DO_VIDEO)
 
 ---
 ### Visão Geral
