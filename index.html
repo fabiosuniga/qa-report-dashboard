@@ -8,8 +8,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>Painel Interativo de QA</title>
-<!-- Biblioteca para gerar o PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 
 <style>
   :root {
@@ -296,6 +295,27 @@
     display: flex !important;
     flex-direction: column !important;
   }
+
+    /* === CONFIGURAÇÕES NATIVAS PARA PDF === */
+  @media print {
+    body { background: #ffffff; padding: 0; margin: 0; }
+    .container { max-width: 100%; padding: 0; }
+    
+    /* Esconde botões e barras que não devem ir pro papel */
+    .toolbar, .icon-action-btn, .expand-toggle { display: none !important; }
+    
+    /* Força o navegador a imprimir as cores de fundo (verde, vermelho, azul) */
+    * { 
+      -webkit-print-color-adjust: exact !important; 
+      print-color-adjust: exact !important; 
+    }
+    
+    /* Layout sequencial para não bugar caixas lado a lado */
+    .comparison-grid { display: flex !important; flex-direction: column !important; }
+    
+    /* Impede o navegador de quebrar a página logo depois de um título */
+    .field-title { page-break-after: avoid; break-after: avoid; }
+  }
 </style>
 </head>
 <body>
@@ -339,7 +359,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect>
         </svg>
-        Exportar PDF
+        Imprimir/Exportar PDF
       </button>
 
       <button class="action-btn btn-save" onclick="saveHTML()">
@@ -653,18 +673,7 @@
 
     // === EXPORTAÇÃO DE PDF === //
   function exportPDF() {
-    const containerEl = document.getElementById('report-container');
-    containerEl.classList.add('pdf-mode');
-
-    // ESCONDE BOTÕES AO EXPORTAR
-    const elementsToHide = document.querySelectorAll('.toolbar, .expand-toggle, .icon-action-btn');
-    const originalDisplays = [];
-    
-    elementsToHide.forEach((el, i) => {
-      originalDisplays[i] = el.style.display;
-      el.style.display = 'none';
-    });
-
+    // 1. Força a expansão de todos os textos compridos
     const contents = document.querySelectorAll('.expandable-content');
     const wasExpanded = [];
     contents.forEach((el, index) => {
@@ -672,6 +681,7 @@
       el.classList.add('expanded');
     });
 
+    // 2. Transforma os <select> em texto fixo para o print
     const selects = document.querySelectorAll('.status-select');
     selects.forEach(sel => {
       const span = document.createElement('span');
@@ -683,28 +693,18 @@
       sel.style.display = 'none';
     });
 
-    const opt = {
-      margin:       [10, 10, 10, 10],
-      filename:     'Relatorio_QA.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'] }
-    };
-
-    html2pdf().set(opt).from(containerEl).save().then(() => {
-      containerEl.classList.remove('pdf-mode');
+    // 3. Aguarda a tela atualizar e chama a tela nativa de PDF
+    setTimeout(() => {
+      window.print(); // Abre a tela de salvar PDF do navegador
       
-      elementsToHide.forEach((el, i) => el.style.display = originalDisplays[i] );
+      // 4. Assim que o usuário fechar a tela, reverte o site ao normal
       contents.forEach((el, index) => {
         if (!wasExpanded[index]) el.classList.remove('expanded');
       });
-      
       document.querySelectorAll('span[data-temp="true"]').forEach(span => span.remove());
       selects.forEach(sel => sel.style.display = '');
-
       initExpandables();
-    });
+    }, 200);
   }
 
   // === SALVAR PÁGINA PREENCHIDA === //
