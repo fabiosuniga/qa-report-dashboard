@@ -10,7 +10,7 @@ Acesse os conteúdos da aplicação:
 
 [![Acessar Live Demo](https://img.shields.io/badge/Demo_Online-Acessar_Painel-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://fabiosuniga.github.io/qa-report-dashboard/)
 &nbsp;&nbsp;
-[![Acessar YouTube](https://img.shields.io/badge/YouTube-Assistir_Demonstração-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/fabiosuniga/qa-report-dashboard/blob/main/https://www.youtube.com/watch?v=cK9l_P9ei2s)
+[![Acessar YouTube](https://img.shields.io/badge/YouTube-Assistir_Demonstração-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=cK9l_P9ei2s)
 
 ---
 ### Visão Geral
