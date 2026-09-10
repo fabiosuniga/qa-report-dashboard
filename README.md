@@ -11,7 +11,7 @@
 
 # Painel Interativo de QA (QA Report Dashboard)
 
-> Painel analítico 100% **client-side** (sem dependência de banco de dados ou backend), projetado para auditoria, validação de prompts e controle de qualidade contínuo em sistemas.
+> Painel analítico 100% **client-side** (sem dependência de banco de dados ou backend), projetado para auditoria, validação de prompts e controle de qualidade contínuo em softwares.
 
 ---
 
@@ -33,8 +33,9 @@ Gera indicadores automáticos de conformidade e relatórios prontos para distrib
 * **Métricas em Tempo Real:** Consolidação automática da taxa de acurácia com base nas classificações (*Correta*, *Imprecisa*, *Incorreta* e *Erro*).
 * **Gestão Ágil de Casos:** Criação, duplicação e exclusão rápida de cartões de avaliação.
 * **Filtros Segmentados:** Isolamento dinâmico de cards por status crítico (ex.: exibição exclusiva de falhas).
-* **Exportação Otimizada para PDF:** Reestruturação de layout via CSS paged media/canvas para entrega do relatório atual.
+* **Exportação Otimizada para PDF:** Reestruturação de layout via CSS paged media/canvas para entrega do relatório atual, o modelo é gerado no proprio navegador, possibilitando a impressão caso deseje.
 * **Portabilidade em Arquivo Único (HTML):** Exportação do estado da sessão em um único arquivo `.html` autossuficiente, preservando total interatividade offline para outros revisores.
+* **Importação Otimizada via HTML:** É possível importar relatórios que já foram anteriormente exportados como página de uma forma otimizada, seu relatório vem exatamente da mesma forma que foi exportado, possibilitando editar da onde parou.
 * **Suporte PWA:** Instalação nativa em desktop e mobile com funcionamento resiliente via cache.
 * **Sanitização de Entrada:** Limpeza automática do clipboard ao colar dados com <kbd>Ctrl</kbd> + <kbd>V</kbd>, prevenindo ruídos de formatação externa.
 
