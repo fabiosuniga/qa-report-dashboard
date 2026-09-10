@@ -4,8 +4,13 @@
 
 > Painel analítico 100% **client-side** (sem dependência de banco de dados ou backend), projetado para auditoria ágil, validação de critérios de aceite e controle de qualidade contínuo em sistemas e fluxos de software.
 ---
+### Demonstração e Uso
 
+Acesse os conteúdos da aplicação:  
+[![Acessar Live Demo](https://img.shields.io/badge/Demo_Online-Acessar_Painel-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://fabiosuniga.github.io/qa-report-dashboard/)
+[![Acessar YouTube](https://img.shields.io/badge/YouTube-Assistir_Demonstração-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cK9l_P9ei2s)
 ### Visão Geral
+---
 
 ![Visão Geral do Painel](assets/tela-inicial.PNG)
 
@@ -40,12 +45,6 @@ Gera indicadores automáticos de conformidade e relatórios prontos para distrib
 * **Sanitização de Entrada:** Limpeza automática do clipboard ao colar dados com <kbd>Ctrl</kbd> + <kbd>V</kbd>, prevenindo ruídos de formatação externa.
 
 ---
-
-### Demonstração e Uso
-
-Acesse os conteúdos da aplicação:  
-[![Acessar Live Demo](https://img.shields.io/badge/Demo_Online-Acessar_Painel-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://fabiosuniga.github.io/qa-report-dashboard/)
-[![Acessar YouTube](https://img.shields.io/badge/YouTube-Assistir_Demonstração-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cK9l_P9ei2s)
 
 #### Fluxo de Trabalho
 
