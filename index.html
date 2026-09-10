@@ -9,7 +9,6 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>Painel Interativo de QA</title>
 
-
 <style>
   :root {
     --bg: #f8fafc;
@@ -174,7 +173,9 @@
   .btn-success:hover { background: #c7d2fe; border-color: #a5b4fc; }
   .btn-save { background: #abd5ff; color: #0252a3; border-color: #93c5fd; }
   .btn-save:hover { background: #93c5fd; border-color: #60a5fa; }
-
+  .btn-danger { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+  .btn-danger:hover { background: #fecaca; border-color: #f87171; }
+   
   /* Cards */
   .cards-list { display: flex; flex-direction: column; gap: 16px; }
   .qa-card {
@@ -296,7 +297,7 @@
     flex-direction: column !important;
   }
 
-    /* === CONFIGURAÇÕES NATIVAS PARA PDF === */
+  /* === CONFIGURAÇÕES NATIVAS PARA PDF === */
   @media print {
     body { background: #ffffff; padding: 0; margin: 0; }
     .container { max-width: 100%; padding: 0; }
@@ -336,8 +337,9 @@
     </div>
   </div>
 
-  <!-- Barra de Ações Principais (Novo / Exportar) -->
+  <!-- Barra de Ações Principais -->
   <div class="toolbar primary-toolbar">
+    
     <div class="toolbar-group">
       <button class="action-btn btn-success" onclick="addNewCard()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -346,7 +348,8 @@
         Novo Item
       </button>
 
-      <button class="action-btn" style="background: #fee2e2; color: #b91c1c; border-color: #fca5a5;" onclick="novoRelatorio()">
+      <!-- O style inline foi removido e a classe btn-danger foi adicionada -->
+      <button class="action-btn btn-danger" onclick="novoRelatorio()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
         </svg>
@@ -354,19 +357,31 @@
       </button>
     </div>
 
+    <!-- Lado Direito: Importação e Exportação -->
     <div class="toolbar-group">
-      <button class="action-btn btn-primary" onclick="exportPDF()">
+      <!-- Importar HTML -->
+      <input type="file" id="file-import" accept=".html" style="display: none;" onchange="importarRelatorio(event)">
+      <button class="action-btn" onclick="document.getElementById('file-import').click()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>
         </svg>
-        Imprimir/Exportar PDF
+        Importar HTML
       </button>
 
+      <!-- Exportar Página -->
       <button class="action-btn btn-save" onclick="saveHTML()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
         Exportar Página
+      </button>
+
+      <!-- Exportar PDF -->
+      <button class="action-btn btn-primary" onclick="exportPDF()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Exportar PDF
       </button>
     </div>
   </div>
@@ -556,7 +571,6 @@
   });
 
   // === CRIAR, EXCLUIR, DUPLICAR, STATUS === //
-
   function changeStatus(selectEl) {
     const card = selectEl.closest('.qa-card');
     const newStatus = selectEl.value;
@@ -673,7 +687,7 @@
 
     // === EXPORTAÇÃO DE PDF === //
   function exportPDF() {
-    // 1. Força a expansão de todos os textos compridos
+    //  Força a expansão de todos os textos compridos
     const contents = document.querySelectorAll('.expandable-content');
     const wasExpanded = [];
     contents.forEach((el, index) => {
@@ -681,7 +695,7 @@
       el.classList.add('expanded');
     });
 
-    // 2. Transforma os <select> em texto fixo para o print
+    // Transforma os <select> em texto fixo para o print
     const selects = document.querySelectorAll('.status-select');
     selects.forEach(sel => {
       const span = document.createElement('span');
@@ -693,11 +707,11 @@
       sel.style.display = 'none';
     });
 
-    // 3. Aguarda a tela atualizar e chama a tela nativa de PDF
+    //  Aguarda a tela atualizar e chama a tela nativa de PDF
     setTimeout(() => {
-      window.print(); // Abre a tela de salvar PDF do navegador
+      window.print();
       
-      // 4. Assim que o usuário fechar a tela, reverte o site ao normal
+      // Assim que o usuário fechar a tela, reverte o site ao normal
       contents.forEach((el, index) => {
         if (!wasExpanded[index]) el.classList.remove('expanded');
       });
@@ -737,6 +751,59 @@
         console.log('Falha ao registrar Service Worker', err);
       });
     });
+  }
+
+    // === IMPORTAR RELATÓRIO (LOAD) === //
+  function importarRelatorio(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Se a tela atual tiver alterações, avisa o usuário
+    if (isDirty && !confirm("Você tem dados não salvos na tela. Importar um arquivo apagará a tela atual. Deseja continuar?")) {
+      event.target.value = ''; // Cancela a ação
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Lê o conteúdo do arquivo
+      const html = e.target.result;
+      
+      //  interpreta o HTML do arquivo
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Extrai apenas os Cards e o Cabeçalho
+      const importedCards = doc.getElementById('cardsContainer');
+      const importedHeader = doc.querySelector('.header');
+
+      // Se o arquivo for válido e tiver as estruturas do nosso sistema
+      if (importedCards && importedHeader) {
+        
+        // Substitui o visual atual pelo visual importado
+        document.getElementById('cardsContainer').innerHTML = importedCards.innerHTML;
+        document.querySelector('.header').innerHTML = importedHeader.innerHTML;
+
+        // O navegador precisa ser forçado a ler qual era o 'select' (status) correto
+        document.querySelectorAll('.status-select').forEach(sel => {
+          const selectedOpt = sel.querySelector('option[selected]');
+          if(selectedOpt) sel.value = selectedOpt.value;
+        });
+
+        // Reinicia a porcentagem e os gatilhos visuais
+        initExpandables();
+        updateKPIs();
+        isDirty = false;
+        
+      } else {
+        alert("Arquivo inválido. Por favor, selecione um relatório em HTML gerado por este painel.");
+      }
+      
+      event.target.value = '';
+    };
+    
+    // Dispara a leitura do arquivo como texto
+    reader.readAsText(file);
   }
 </script>
 
