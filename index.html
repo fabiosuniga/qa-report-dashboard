@@ -300,13 +300,13 @@
   /* === CONFIGURAÇÕES NATIVAS PARA PDF === */
   @media print {
     @page {
-      margin: 0; /* Truque: margem 0 mata o cabeçalho e a URL nativa do navegador */
+      margin: 0;
     }
     
     body { 
       background: #ffffff; 
       margin: 0; 
-      padding: 15mm !important; /* Criamos nossa própria margem limpa de 1,5cm */
+      padding: 15mm !important; 
     }
     
     .container { max-width: 100%; padding: 0; }
@@ -320,7 +320,7 @@
       print-color-adjust: exact !important; 
     }
     
-    /* Layout sequencial para não bugar caixas lado a lado */
+    /* Layout sequencial para não bugar o layout */
     .comparison-grid { display: flex !important; flex-direction: column !important; }
     
     /* Impede o navegador de quebrar a página logo depois de um título */
