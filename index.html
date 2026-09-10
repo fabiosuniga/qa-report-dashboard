@@ -299,13 +299,22 @@
 
   /* === CONFIGURAÇÕES NATIVAS PARA PDF === */
   @media print {
-    body { background: #ffffff; padding: 0; margin: 0; }
+    @page {
+      margin: 0; /* Truque: margem 0 mata o cabeçalho e a URL nativa do navegador */
+    }
+    
+    body { 
+      background: #ffffff; 
+      margin: 0; 
+      padding: 15mm !important; /* Criamos nossa própria margem limpa de 1,5cm */
+    }
+    
     .container { max-width: 100%; padding: 0; }
     
     /* Esconde botões e barras que não devem ir pro papel */
     .toolbar, .icon-action-btn, .expand-toggle { display: none !important; }
     
-    /* Força o navegador a imprimir as cores de fundo (verde, vermelho, azul) */
+    /* Força o navegador a imprimir as cores de fundo */
     * { 
       -webkit-print-color-adjust: exact !important; 
       print-color-adjust: exact !important; 
