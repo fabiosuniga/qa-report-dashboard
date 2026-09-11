@@ -488,23 +488,25 @@
       }
   });
 
-  function novoRelatorio() {
-      if (confirm("Você gostaria de exportar a página atual antes de começar um novo relatório?")) {
-          saveHTML();
-      }
-
-      if (confirm("ATENÇÃO: Isso apagará todos os dados não salvos da tela atual. Confirmar a criação de um novo relatório?")) {
-          document.getElementById('cardsContainer').innerHTML = '';
-          addNewCard();
-
-          const headerH1 = document.querySelector('.header h1');
-          const headerP = document.querySelector('.header p');
-          if (headerH1) headerH1.innerText = 'Título do seu projeto';
-          if (headerP) headerP.innerHTML = 'Ordem de Serviço: <strong>[Insira a OS]</strong> &nbsp;•&nbsp; Versão: <strong>[Insira a Versão]</strong> &nbsp;•&nbsp; Data: <strong>[Data]</strong>';
-
-          isDirty = false;
-      }
-  }
+  // === NOVO RELATÓRIO === //
+async function novoRelatorio() {
+    if (confirm("Você gostaria de exportar a página atual antes de começar um novo relatório?")) {
+        await saveHTML();
+    }
+    
+    if (confirm("ATENÇÃO: Isso apagará todos os dados não salvos da tela atual. Confirmar a criação de um novo relatório?")) {
+        document.getElementById('cardsContainer').innerHTML = '';
+        addNewCard();
+        
+        const headerH1 = document.querySelector('.header h1');
+        const headerP = document.querySelector('.header p');
+        
+        if (headerH1) headerH1.innerText = 'Título do seu projeto';
+        if (headerP) headerP.innerHTML = 'Ordem de Serviço: <strong>[Insira a OS]</strong> &nbsp;•&nbsp; Versão: <strong>[Insira a Versão]</strong> &nbsp;•&nbsp; Data: <strong>[Data]</strong>';
+        
+        isDirty = false;
+    }
+}
 
   // === LIMPEZA DE FORMATAÇÃO AO COLAR === //
   document.addEventListener('paste', function(e) {
@@ -731,25 +733,50 @@
   }
 
   // === SALVAR PÁGINA PREENCHIDA === //
-  function saveHTML() {
+async function saveHTML() {
+    // Atualiza os selects para o HTML
     document.querySelectorAll('select').forEach(sel => {
-      Array.from(sel.options).forEach(opt => {
-        if (opt.value === sel.value) opt.setAttribute('selected', 'selected');
-        else opt.removeAttribute('selected');
-      });
+        Array.from(sel.options).forEach(opt => {
+            if (opt.value === sel.value) opt.setAttribute('selected', 'selected');
+            else opt.removeAttribute('selected');
+        });
     });
 
     const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Relatorio_QA_Preenchido.html';
-    link.click();
-    URL.revokeObjectURL(url);
-    
-    isDirty = false;
-  }
+
+    try {
+        // Tenta abrir a janela nativa de salvar arquivos
+        if (window.showSaveFilePicker) {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: 'Relatorio_QA_Preenchido.html',
+                types: [{
+                    description: 'Arquivo HTML',
+                    accept: { 'text/html': ['.html'] },
+                }],
+            });
+            const writable = await handle.createWritable();
+            await writable.write(htmlContent);
+            await writable.close();
+            isDirty = false;
+        } else {
+            // Baixa direto na pasta Downloads
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Relatorio_QA_Preenchido.html';
+            link.click();
+            URL.revokeObjectURL(url);
+            isDirty = false;
+        }
+    } catch (error) {
+        // Se o erro for apenas o usuário cancelando a janela de salvar, ignoramos
+        if (error.name !== 'AbortError') {
+            console.error("Erro ao salvar o arquivo:", error);
+            alert("Ocorreu um erro ao salvar o arquivo.");
+        }
+    }
+}
   
   // === SERVICE WORKER (PWA) === //
   if ('serviceWorker' in navigator) {
