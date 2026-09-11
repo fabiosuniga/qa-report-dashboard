@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qa-panel-v1';
+const CACHE_NAME = 'qa-panel-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -13,9 +13,26 @@ self.addEventListener('install', event => {
   );
 });
 
+// O evento activate é acionado quando o Service Worker assume o controle
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Se não achar conexão, ele faz o cache offline mesmo
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
